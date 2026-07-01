@@ -4,6 +4,7 @@ import re
 import shutil
 import zipfile
 from dataclasses import dataclass, field
+from importlib.metadata import version as get_version
 from pathlib import Path
 from typing import Optional
 from xml.etree import ElementTree
@@ -22,6 +23,12 @@ app = typer.Typer(
     help="Extract Adobe CC fonts to OTF files organized by family folder.",
     no_args_is_help=True,
 )
+
+
+def _version_callback(value: bool) -> None:
+    if value:
+        console.print(f"adobe-cc-font-extractor {get_version('adobe-cc-font-extractor')}")
+        raise typer.Exit()
 
 
 @dataclass
@@ -87,6 +94,7 @@ def find_font_file(font_id: str, font_path: Path) -> Optional[Path]:
 
 @app.command()
 def extract(
+    _version: Optional[bool] = typer.Option(None, "--version", "-V", is_eager=True, callback=_version_callback, help="Show version and exit"),
     output: Path = typer.Option(Path("Fonts"), "--output", "-o", help="Output directory"),
     dry_run: bool = typer.Option(False, "--dry-run", "-n", help="Show what would be extracted without copying files"),
     family: Optional[list[str]] = typer.Option(None, "--family", "-f", help="Filter by family name (repeatable)"),

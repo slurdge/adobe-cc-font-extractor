@@ -1,7 +1,8 @@
 [project]
 name = "adobe-cc-font-extractor"
-version = "1.0.2"
+version = "1.0.3"
 description = "Extract Adobe CC fonts to local OTF files organized by family"
+readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "fonttools>=4.54.0",
