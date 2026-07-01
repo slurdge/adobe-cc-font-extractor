@@ -2,6 +2,11 @@
 
 Extracts Adobe CC fonts from the local CoreSync cache into named OTF files organized by family.
 
+## Quick run **Without installing** (via `uvx`):
+```sh
+uvx adobe-cc-font-extractor [OPTIONS]
+```
+
 ## Requirements
 
 - [uv](https://docs.astral.sh/uv/)
@@ -9,19 +14,22 @@ Extracts Adobe CC fonts from the local CoreSync cache into named OTF files organ
 
 ## Installation
 
+Clone the repo, then run once to create the environment:
+
 ```sh
 uv sync
 ```
 
 ## Usage
 
+**From the project directory** (after `uv sync`):
 ```sh
 uv run adobe-cc-font-extractor [OPTIONS]
 ```
 
 | Option | Short | Description |
 |---|---|---|
-| `--output PATH` | `-o` | Output directory (default: `output/`) |
+| `--output PATH` | `-o` | Output directory (default: `Fonts/`) |
 | `--dry-run` | `-n` | Preview what would be extracted without copying |
 | `--family TEXT` | `-f` | Filter by family name — repeatable |
 | `--force` | | Overwrite existing files |
@@ -49,7 +57,7 @@ uv run adobe-cc-font-extractor -f "Proxima Nova" -f "Museo Sans" --zip-files
 ## Output structure
 
 ```
-output/
+Fonts/
   Proxima Nova/
     Proxima Nova Regular.otf
     Proxima Nova Bold.otf

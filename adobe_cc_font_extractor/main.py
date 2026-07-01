@@ -87,7 +87,7 @@ def find_font_file(font_id: str, font_path: Path) -> Optional[Path]:
 
 @app.command()
 def extract(
-    output: Path = typer.Option(Path("output"), "--output", "-o", help="Output directory"),
+    output: Path = typer.Option(Path("Fonts"), "--output", "-o", help="Output directory"),
     dry_run: bool = typer.Option(False, "--dry-run", "-n", help="Show what would be extracted without copying files"),
     family: Optional[list[str]] = typer.Option(None, "--family", "-f", help="Filter by family name (repeatable)"),
     force: bool = typer.Option(False, "--force", help="Overwrite existing files"),
