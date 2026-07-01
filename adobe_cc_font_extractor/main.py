@@ -12,7 +12,13 @@ from xml.etree import ElementTree
 import typer
 from fontTools.ttLib import TTFont
 from rich.console import Console
-from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn, TextColumn
+from rich.progress import (
+    BarColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+)
 from rich.table import Table
 
 FONT_SPECIFIER_VARIATION_ID = 4
@@ -27,7 +33,9 @@ app = typer.Typer(
 
 def _version_callback(value: bool) -> None:
     if value:
-        console.print(f"adobe-cc-font-extractor {get_version('adobe-cc-font-extractor')}")
+        console.print(
+            f"adobe-cc-font-extractor {get_version('adobe-cc-font-extractor')}"
+        )
         raise typer.Exit()
 
 
@@ -55,7 +63,11 @@ def get_adobe_font_path() -> Path:
     if platform.system() == "Windows":
         return Path(os.path.expandvars(r"%APPDATA%\Adobe\CoreSync\plugins\livetype"))
     elif platform.system() == "Darwin":
-        return Path(os.path.expandvars("$HOME/Library/Application Support/Adobe/CoreSync/plugins/livetype"))
+        return Path(
+            os.path.expandvars(
+                "$HOME/Library/Application Support/Adobe/CoreSync/plugins/livetype"
+            )
+        )
     else:
         console.print(f"[red]Unsupported platform:[/red] {platform.system()}")
         raise typer.Exit(1)
@@ -94,14 +106,41 @@ def find_font_file(font_id: str, font_path: Path) -> Optional[Path]:
 
 @app.command()
 def extract(
-    _version: Optional[bool] = typer.Option(None, "--version", "-V", is_eager=True, callback=_version_callback, help="Show version and exit"),
-    output: Path = typer.Option(Path("Fonts"), "--output", "-o", help="Output directory"),
-    dry_run: bool = typer.Option(False, "--dry-run", "-n", help="Show what would be extracted without copying files"),
-    family: Optional[list[str]] = typer.Option(None, "--family", "-f", help="Filter by family name (repeatable)"),
+    _version: Optional[bool] = typer.Option(
+        None,
+        "--version",
+        "-V",
+        is_eager=True,
+        callback=_version_callback,
+        help="Show version and exit",
+    ),
+    output: Path = typer.Option(
+        Path("Fonts"), "--output", "-o", help="Output directory"
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        "-n",
+        help="Show what would be extracted without copying files",
+    ),
+    family: Optional[list[str]] = typer.Option(
+        None, "--family", "-f", help="Filter by family name (repeatable)"
+    ),
     force: bool = typer.Option(False, "--force", help="Overwrite existing files"),
-    flat: bool = typer.Option(False, "--flat", help="Put all fonts in output dir without family subdirectories"),
-    zip_files: bool = typer.Option(False, "--zip-files", "-z", help="Create one zip archive per family in the output directory"),
-    font_dir: Optional[Path] = typer.Option(None, "--font-dir", help="Override the Adobe CoreSync font directory"),
+    flat: bool = typer.Option(
+        False,
+        "--flat",
+        help="Put all fonts in output dir without family subdirectories",
+    ),
+    zip_files: bool = typer.Option(
+        False,
+        "--zip-files",
+        "-z",
+        help="Create one zip archive per family in the output directory",
+    ),
+    font_dir: Optional[Path] = typer.Option(
+        None, "--font-dir", help="Override the Adobe CoreSync font directory"
+    ),
 ) -> None:
     """Extract Adobe CC fonts to OTF files, organized in per-family subdirectories."""
     font_path = font_dir or get_adobe_font_path()
@@ -162,7 +201,9 @@ def extract(
             try:
                 TTFont(file=source)
             except Exception as exc:
-                console.print(f"[yellow]  Invalid font file:[/yellow] {entry.full_name} — {exc}")
+                console.print(
+                    f"[yellow]  Invalid font file:[/yellow] {entry.full_name} — {exc}"
+                )
                 stats.errors += 1
                 progress.advance(task)
                 continue
@@ -200,7 +241,9 @@ def _print_report(stats: ExtractionStats, dry_run: bool, zipped: int = 0) -> Non
     extracted_families = {fam: vars for fam, vars in stats.families.items() if vars}
 
     if extracted_families:
-        table = Table(title="Fonts Extracted by Family", show_header=True, header_style="bold")
+        table = Table(
+            title="Fonts Extracted by Family", show_header=True, header_style="bold"
+        )
         table.add_column("Family", style="cyan", no_wrap=True)
         table.add_column("Variations", style="green")
         table.add_column("#", justify="right", style="bold")
@@ -213,7 +256,9 @@ def _print_report(stats: ExtractionStats, dry_run: bool, zipped: int = 0) -> Non
 
     console.print()
     action = "Would extract" if dry_run else "Extracted"
-    console.print(f"[bold green]{action}:[/bold green] {stats.extracted} fonts across {len(extracted_families)} families")
+    console.print(
+        f"[bold green]{action}:[/bold green] {stats.extracted} fonts across {len(extracted_families)} families"
+    )
     if stats.skipped:
         console.print(f"[yellow]Skipped (already exist):[/yellow] {stats.skipped}")
     if stats.missing:
@@ -221,7 +266,9 @@ def _print_report(stats: ExtractionStats, dry_run: bool, zipped: int = 0) -> Non
     if stats.errors:
         console.print(f"[red]Errors:[/red] {stats.errors}")
     if zipped:
-        console.print(f"[bold cyan]Zipped:[/bold cyan] {zipped} family archives created")
+        console.print(
+            f"[bold cyan]Zipped:[/bold cyan] {zipped} family archives created"
+        )
 
 
 def main() -> None:
