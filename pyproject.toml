@@ -1,0 +1,17 @@
+[project]
+name = "adobe-cc-font-extractor"
+version = "0.1.0"
+description = "Extract Adobe CC fonts to local OTF files organized by family"
+requires-python = ">=3.10"
+dependencies = [
+    "fonttools>=4.54.0",
+    "typer>=0.12.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+adobe-cc-font-extractor = "adobe_cc_font_extractor.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
