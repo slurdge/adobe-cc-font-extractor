@@ -168,9 +168,9 @@ def extract(
 
     with Progress(
         SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         TaskProgressColumn(),
+        TextColumn("[progress.description]{task.description}"),
         console=console,
         transient=True,
     ) as progress:
@@ -217,25 +217,21 @@ def extract(
             stats.extracted += 1
             progress.advance(task)
 
-    zipped = 0
-    if zip_files and not dry_run:
-        zipped = _zip_families(stats.family_files, output)
+        zipped = 0
+        progress.reset(task, total=len(stats.family_files))
+        if zip_files and not dry_run:
+            for family_name, paths in stats.family_files.items():
+                progress.update(task, description=f"[dim]{family_name[:50]}[/dim]")
+                if not paths:
+                    continue
+                zip_path = output / f"{sanitize_path_component(family_name)}.zip"
+                with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+                    for p in set(paths):
+                        zf.write(p, arcname=p.name)
+                zipped += 1
+                progress.advance(task)
 
     _print_report(stats, dry_run, zipped)
-
-
-def _zip_families(family_files: dict[str, list[Path]], output: Path) -> int:
-    zipped = 0
-    for family_name, paths in family_files.items():
-        if not paths:
-            continue
-        zip_path = output / f"{sanitize_path_component(family_name)}.zip"
-        with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-            for p in paths:
-                zf.write(p, arcname=p.name)
-        zipped += 1
-    return zipped
-
 
 def _print_report(stats: ExtractionStats, dry_run: bool, zipped: int = 0) -> None:
     extracted_families = {fam: vars for fam, vars in stats.families.items() if vars}
