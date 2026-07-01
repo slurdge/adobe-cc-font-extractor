@@ -225,13 +225,16 @@ def extract(
                 if not paths:
                     continue
                 zip_path = output / f"{sanitize_path_component(family_name)}.zip"
-                with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+                with zipfile.ZipFile(
+                    zip_path, "w", compression=zipfile.ZIP_DEFLATED
+                ) as zf:
                     for p in set(paths):
                         zf.write(p, arcname=p.name)
                 zipped += 1
                 progress.advance(task)
 
     _print_report(stats, dry_run, zipped)
+
 
 def _print_report(stats: ExtractionStats, dry_run: bool, zipped: int = 0) -> None:
     extracted_families = {fam: vars for fam, vars in stats.families.items() if vars}
